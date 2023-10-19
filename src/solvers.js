@@ -151,21 +151,20 @@ window.countNQueensSolutions = function(n) {
     // loop through column
     for (var col = 0; col < n; col++) {
       // if rows and columns are true, then we place the queen on the current cell
-      if (validCols[col] && validRows[row]) {
-        solution.togglePiece(row, col);
-        validRows[row] = false;
-        validCols[col] = false;
-        // recursively call on the next row (row + 1)
-        if (!solution.hasAnyQueenConflictsOn(row, col)) {
-          addQueen(row + 1);
-        }
-        // after the recursive calls,restore the availability of rows and columns
-        validRows[row] = true;
-        validCols[col] = true;
-        // backtracking by marking off unavailable rows and columns
-        // untoggle on failure
-        solution.togglePiece(row, col);
+
+
+      solution.togglePiece(row, col);
+      // recursively call on the next row (row + 1)
+      if (!solution.hasAnyQueenConflictsOn(row, col)) {
+        addQueen(row + 1);
       }
+      // after the recursive calls,restore the availability of rows and columns
+      validRows[row] = true;
+      validCols[col] = true;
+      // backtracking by marking off unavailable rows and columns
+      // untoggle on failure
+      solution.togglePiece(row, col);
+
 
     }
 
