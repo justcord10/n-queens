@@ -54,12 +54,6 @@ window.findNRooksSolution = function(n) {
 window.countNRooksSolutions = function(n) {
   var solution = new Board ({ n: n});
   var solutionCount = 0;
-
-  // Initialize an array of n size for rows and column and fill them with true (easier for logic than 1 and 0)
-  // this is to help find our unique solutions
-  var validRows = Array(n).fill(true);
-  var validCols = Array(n).fill(true);
-
   // Implement recurssive function to find rook configurations
   var addRook = function (row) {
     // Base case, if all rows have been processed (row === n), then increment solutionCount and return
@@ -67,23 +61,17 @@ window.countNRooksSolutions = function(n) {
       solutionCount ++;
       return;
     }
-    // loop through column
+    // loop through columns
     for (var col = 0; col < n; col++) {
       // if rows and columns are true, then we place the rook on the current cell
-      if (validCols[col] && validRows[row]) {
-        solution.togglePiece(row, col);
-        validRows[row] = false;
-        validCols[col] = false;
+      solution.togglePiece(row, col);
+      if (!solution.hasAnyRooksConflictsOn(row, col)) {
         // recursively call on the next row (row + 1)
         addRook(row + 1);
-        // after the recursive calls,restore the availability of rows and columns
-        validRows[row] = true;
-        validCols[col] = true;
-        // backtracking by marking off unavailable rows and columns
-        // untoggle on failure
-        solution.togglePiece(row, col);
       }
-
+      // backtracking by marking off unavailable rows and columns
+      // untoggle on failure
+      solution.togglePiece(row, col);
     }
 
   };
@@ -136,11 +124,6 @@ window.countNQueensSolutions = function(n) {
   var solution = new Board ({ n: n});
   var solutionCount = 0;
 
-  // Initialize an array of n size for rows and column and fill them with true (easier for logic than 1 and 0)
-  // this is to help find our unique solutions
-  var validRows = Array(n).fill(true);
-  var validCols = Array(n).fill(true);
-
   // Implement recurssive function to find queen configurations
   var addQueen = function (row) {
     // Base case, if all rows have been processed (row === n), then increment solutionCount and return
@@ -150,22 +133,16 @@ window.countNQueensSolutions = function(n) {
     }
     // loop through column
     for (var col = 0; col < n; col++) {
-      // if rows and columns are true, then we place the queen on the current cell
-
-
+      //place a queen at current spot
       solution.togglePiece(row, col);
-      // recursively call on the next row (row + 1)
+      //check to see if that new piece causes a conflict
       if (!solution.hasAnyQueenConflictsOn(row, col)) {
+        // recursively call on the next row (row + 1)
         addQueen(row + 1);
       }
-      // after the recursive calls,restore the availability of rows and columns
-      validRows[row] = true;
-      validCols[col] = true;
       // backtracking by marking off unavailable rows and columns
       // untoggle on failure
       solution.togglePiece(row, col);
-
-
     }
 
   };
