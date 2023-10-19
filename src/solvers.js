@@ -16,15 +16,80 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  // Create empty chessboard with given size n
+  var solution = new Board ({ n: n});
+
+  // Define a recursive function to add rooks
+  var addRook = function (row) {
+    // Base Case: All rows have been processed and a solution has been found
+    if (row === n) {
+      return true;
+    }
+
+    // Iterate through columns
+    for (var col = 0; col < n; col++) {
+      // Place rook on the current cell
+      solution.togglePiece(row, col);
+      // Check for conflicts
+      if (!solution.hasAnyRooksConflicts()) {
+        // If no conflicts, then proceed too the next row
+        if (addRook(row + 1)) {
+          // If a valid solution is found in the recurssion, return true
+          return true;
+        }
+      }
+
+      //If no valid solution is found, toggle off the rook and continue the loop
+      solution.togglePiece(row, col);
+    }
+  };
+  // start recursion from the first row
+  addRook(0);
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  return solution.rows();
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solution = new Board ({ n: n});
+  var solutionCount = 0;
+
+  // Initialize an array of n size for rows and column and fill them with true (easier for logic than 1 and 0)
+  // this is to help find our unique solutions
+  var validRows = Array(n).fill(true);
+  var validCols = Array(n).fill(true);
+
+  // Implement recurssive function to find rook configurations
+  var addRook = function (row) {
+    // Base case, if all rows have been processed (row === n), then increment solutionCount and return
+    if (row === n) {
+      solutionCount ++;
+      return;
+    }
+    // loop through column
+    for (var col = 0; col < n; col++) {
+      // if rows and columns are true, then we place the rook on the current cell
+      if (validCols[col] && validRows[row]) {
+        solution.togglePiece(row, col);
+        validRows[row] = false;
+        validCols[col] = false;
+        // recursively call on the next row (row + 1)
+        addRook(row + 1);
+        // after the recursive calls,restore the availability of rows and columns
+        validRows[row] = true;
+        validCols[col] = true;
+        // backtracking by marking off unavailable rows and columns
+        // untoggle on failure
+        solution.togglePiece(row, col);
+      }
+
+    }
+
+  };
+  // start recurssion from the first row
+  addRook(0);
+
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
@@ -32,16 +97,83 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  // Create empty chessboard with given size n
+  var solution = new Board ({ n: n});
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  // Define a recursive function to add rooks
+  var addQueen = function (row) {
+    // Base Case: All rows have been processed and a solution has been found
+    if (row === n) {
+      return true;
+    }
+
+    // Iterate through columns
+    for (var col = 0; col < n; col++) {
+      // Place rook on the current cell
+      solution.togglePiece(row, col);
+      // Check for conflicts
+      if (!solution.hasAnyQueenConflictsOn(row, col)) {
+        // If no conflicts, then proceed too the next row
+        if (addQueen(row + 1)) {
+          // If a valid solution is found in the recurssion, return true
+          return true;
+        }
+      }
+
+      //If no valid solution is found, toggle off the rook and continue the loop
+      solution.togglePiece(row, col);
+    }
+  };
+  // start recursion from the first row
+  addQueen(0);
+
+  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  return solution.rows();
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solution = new Board ({ n: n});
+  var solutionCount = 0;
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  // Initialize an array of n size for rows and column and fill them with true (easier for logic than 1 and 0)
+  // this is to help find our unique solutions
+  var validRows = Array(n).fill(true);
+  var validCols = Array(n).fill(true);
+
+  // Implement recurssive function to find queen configurations
+  var addQueen = function (row) {
+    // Base case, if all rows have been processed (row === n), then increment solutionCount and return
+    if (row === n) {
+      solutionCount ++;
+      return;
+    }
+    // loop through column
+    for (var col = 0; col < n; col++) {
+      // if rows and columns are true, then we place the queen on the current cell
+      if (validCols[col] && validRows[row]) {
+        solution.togglePiece(row, col);
+        validRows[row] = false;
+        validCols[col] = false;
+        // recursively call on the next row (row + 1)
+        if (!solution.hasAnyQueenConflictsOn(row, col)) {
+          addQueen(row + 1);
+        }
+        // after the recursive calls,restore the availability of rows and columns
+        validRows[row] = true;
+        validCols[col] = true;
+        // backtracking by marking off unavailable rows and columns
+        // untoggle on failure
+        solution.togglePiece(row, col);
+      }
+
+    }
+
+  };
+  // start recurssion from the first row
+  addQueen(0);
+
+
+  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
